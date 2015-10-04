@@ -1,12 +1,14 @@
 FreeRunner.Game = function(){
     this.playerMinAngle = -20;
     this.playerMaxAngle = 20;
+    this.coinRate = 1000; // appear every second
+    this.coinTimer = 0;   // check every game loop if the coin was created
 };
 
 FreeRunner.Game.prototype = {
     
     create: function(){
-       this.background = this.game.add.tileSprite(0, 0, this.game.width, 600, 'background');
+        this.background = this.game.add.tileSprite(0, 0, this.game.width, 600, 'background');
         this.background.autoScroll(-100, 0);
         
         this.foreground = this.game.add.tileSprite(0, 475, this.game.width, this.game.height - 533, 'foreground');
@@ -35,6 +37,9 @@ FreeRunner.Game.prototype = {
         this.game.physics.arcade.enableBody(this.player);
         this.player.body.collideWorldBounds = true;
         this.player.body.bounce.set(0.25);
+
+        // COINS GROUP
+        this.coins = this.game.add.group();
     },
     
     update: function(){
@@ -57,8 +62,30 @@ FreeRunner.Game.prototype = {
             }
         }
         
+        // COINS
+        if(this.coinTimer < this.game.time.now){
+            // A NEW COIN IS CREATED EVERY SECOND
+            this.createCoin();
+            this.coinTimer = this.game.time.now + this.coinRate;
+        }
+
         // COLLISIONS
         this.game.physics.arcade.collide(this.player, this.ground, this.groundHit, null, this);
+    },
+    createCoin: function(){
+        // SET COORDINATES
+        var x = this.game.width;
+        // RANDOM NUMBER FOR HEIGHT< DEPENDS ON THE HEIGHT OF THE GROUND
+        var y = this.game.rnd.integerInRange(50,this.game.world.height - 192);
+        // CHECK FOR RECYCLING
+        var coin = this.coins.getFirstExists(false);
+        if(!coin){
+            coin = new Coin(this.game,0,0);
+            this.coins.add(coin);
+        }
+        // RESET THE COIN
+        coin.reset(x,y);
+        coin.revive();
     },
     
     shutdown: function(){
