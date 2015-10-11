@@ -13,8 +13,7 @@ FreeRunner.Preload.prototype = {
         this.load.image('background','assets/images/space.png');
         this.load.image('foreground','assets/images/tundra.gif');
         
-        this.load.spritesheet('coins','assets/images/coins-ps.png', 51, 51, 7);
-        //this.load.spritesheet('player','assets/images/jetpack-ps.png', 229, 296, 4);
+        this.load.spritesheet('coins','assets/images/coins-ps.png', 51, 51, 7);;
         this.load.spritesheet('player','assets/images/spaceship.png',64,29,4);
         this.load.spritesheet('missile','assets/images/missiles-ps.png', 361, 218, 4);
         

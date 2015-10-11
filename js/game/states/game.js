@@ -1,8 +1,12 @@
 FreeRunner.Game = function(){
     this.playerMinAngle = -20;
     this.playerMaxAngle = 20;
+
     this.coinRate = 1000; // appear every second
     this.coinTimer = 0;   // check every game loop if the coin was created
+
+    this.enemyRate = 500;
+    this.enemyTimer = 0;
 };
 
 FreeRunner.Game.prototype = {
@@ -40,6 +44,9 @@ FreeRunner.Game.prototype = {
 
         // COINS GROUP
         this.coins = this.game.add.group();
+
+        // ENEMIES GROUP
+        this.enemies = this.game.add.group();
     },
     
     update: function(){
@@ -69,6 +76,12 @@ FreeRunner.Game.prototype = {
             this.coinTimer = this.game.time.now + this.coinRate;
         }
 
+        // ENEMIES
+        if(this.enemyTimer < this.game.time.now){
+            this.createEnemy();
+            this.enemyTimer = this.game.time.now + this.enemyRate;
+        }
+
         // COLLISIONS
         this.game.physics.arcade.collide(this.player, this.ground, this.groundHit, null, this);
     },
@@ -88,6 +101,22 @@ FreeRunner.Game.prototype = {
         coin.revive();
     },
     
+    createEnemy: function(){
+        // SET COORDINATES
+        var x = this.game.width;
+        // RANDOM NUMBER FOR HEIGHT< DEPENDS ON THE HEIGHT OF THE GROUND
+        var y = this.game.rnd.integerInRange(50,this.game.world.height - 192);
+        // CHECK FOR RECYCLING
+        var enemy = this.enemies.getFirstExists(false);
+        if(!enemy){
+            enemy = new Enemy(this.game,0,0);
+            this.enemies.add(enemy);
+        }
+        // RESET THE COIN
+        enemy.reset(x,y);
+        enemy.revive();
+    },
+
     shutdown: function(){
         
     },
