@@ -17,7 +17,7 @@ FreeRunner.Game.prototype = {
       this.background = this.game.add.tileSprite(0, 0, this.game.width, 600, 'background');
       this.background.autoScroll(-100, 0);
 
-      this.foreground = this.game.add.tileSprite(0, 475, this.game.width, this.game.height - 533, 'foreground');
+      this.foreground = this.game.add.tileSprite(0, 475, this.game.width, 231, 'foreground');
       this.foreground.autoScroll(-150, 0);
 
       this.ground = this.game.add.tileSprite(0, this.game.height - 73, this.game.width, 73, 'ground');
@@ -95,7 +95,7 @@ FreeRunner.Game.prototype = {
       this.game.physics.arcade.overlap(this.player, this.coins, this.coinHit, null, this);
 
       // OVERLAPING ENEMIES
-      this.game.physics.arcade.overlap(this.player, this.enemies, this.coinEnemy, null, this);
+      this.game.physics.arcade.overlap(this.player, this.enemies, this.enemyHit, null, this);
    },
    createCoin: function () {
       // SET COORDINATES
@@ -129,10 +129,6 @@ FreeRunner.Game.prototype = {
       enemy.revive();
    },
 
-   shutdown: function() {
-
-   },
-
    groundHit: function (player, ground) {
       player.body.velocity.y = -150;
    },
@@ -144,6 +140,28 @@ FreeRunner.Game.prototype = {
    },
 
    enemyHit: function(player, enemy){
+      player.kill();
+      enemy.kill();
+
+      this.ground.stopScroll();
+      this.background.stopScroll();
+      this.foreground.stopScroll();
+
+      // stop enemies from moving
+      this.enemies.setAll('body.velocity.x',0);
+      this.coins.setAll('body.velocity.x',0);
+
+      // stop generating enemies
+      this.enemyTimer = Number.MAX_VALUE;
+
+      // stop generating coins
+      this.coinTimer = Number.MAX_VALUE;
+
+      var scoreboard = new Scoreboard(this.game);
+      scoreboard.show(this.score);
+   },
+
+   shutdown: function() {
 
    }
 }

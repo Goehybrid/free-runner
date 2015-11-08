@@ -2,10 +2,11 @@ FreeRunner.MainMenu = function(){};
 
 FreeRunner.MainMenu.prototype = {
     create: function(){
-        this.background = this.game.add.tileSprite(0, 0, this.game.width, 600, 'background');
+        this.background = this.game.add.tileSprite(0, 0, this.game.width, 700, 'background');
         this.background.autoScroll(-100, 0);
         
-        this.foreground = this.game.add.tileSprite(0, 475, this.game.width, this.game.height - 533, 'foreground');
+        this.foreground = this.game.add.tileSprite(0, 475, this.game.width, 231, 'foreground');
+        this.foreground.scale.setTo(1.8);
         this.foreground.autoScroll(-150, 0);
         
         this.ground = this.game.add.tileSprite(0, this.game.height - 73, this.game.width, 73, 'ground');
@@ -14,7 +15,7 @@ FreeRunner.MainMenu.prototype = {
         // PLAYER
         this.player = this.add.sprite(100, this.game.height/2,'player');
         this.player.anchor.setTo(0.5);
-        //this.player.scale.setTo(0.3);
+        this.player.scale.setTo(1.5);
         
         this.player.animations.add('fly', [0, 1, 2, 3, 2, 1]);
         this.player.animations.play('fly', 8, true);
