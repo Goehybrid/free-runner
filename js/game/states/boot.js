@@ -17,6 +17,7 @@ FreeRunner.Boot.prototype = {
         if(this.game.device.desktop){
             // DESKTOP SETTINGS
             this.scale.pageAlignHorizontally = true;
+            this.scale.pageAlignVertically = true;
         } else {
             // MOBILE SETTINGS
             this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;

@@ -14,11 +14,12 @@ FreeRunner.Game = function () {
 FreeRunner.Game.prototype = {
 
    create: function () {
-      this.background = this.game.add.tileSprite(0, 0, this.game.width, 600, 'background');
+      this.background = this.game.add.tileSprite(0, 0, this.game.width, this.game.height, 'background');
       this.background.autoScroll(-100, 0);
 
-      this.foreground = this.game.add.tileSprite(0, 475, this.game.width, 231, 'foreground');
-      this.foreground.autoScroll(-150, 0);
+      //this.foreground = this.game.add.tileSprite(0, 575, this.game.width, 231, 'foreground');
+      //this.foreground.scale.setTo(1.8);
+      //this.foreground.autoScroll(-120, 0);
 
       this.ground = this.game.add.tileSprite(0, this.game.height - 73, this.game.width, 73, 'ground');
       this.ground.autoScroll(-400, 0);
@@ -26,13 +27,14 @@ FreeRunner.Game.prototype = {
       // PLAYER
       this.player = this.add.sprite(100, this.game.height / 2, 'player');
       this.player.anchor.setTo(0.5);
+      this.player.scale.setTo(1.5);
 
       this.player.animations.add('fly', [0, 1, 2, 3, 2, 1]);
       this.player.animations.play('fly', 8, true);
 
       // PHYSICS SETUP
       this.game.physics.startSystem(Phaser.Physics.ARCADE);
-      this.game.physics.arcade.gravity.y = 500;
+      this.game.physics.arcade.gravity.y = 600;
 
       // GROUND PHYSICS
       this.game.physics.arcade.enableBody(this.ground);
@@ -117,7 +119,7 @@ FreeRunner.Game.prototype = {
       // SET COORDINATES
       var x = this.game.width;
       // RANDOM NUMBER FOR HEIGHT< DEPENDS ON THE HEIGHT OF THE GROUND
-      var y = this.game.rnd.integerInRange(50, this.game.world.height - 192);
+      var y = this.game.rnd.integerInRange(50, this.game.world.height - this.ground.height);
       // CHECK FOR RECYCLING
       var enemy = this.enemies.getFirstExists(false);
       if (!enemy) {
@@ -130,7 +132,21 @@ FreeRunner.Game.prototype = {
    },
 
    groundHit: function (player, ground) {
-      player.body.velocity.y = -150;
+      player.kill();
+      this.ground.stopScroll();
+      this.background.stopScroll();
+      // stop enemies from moving
+      this.enemies.setAll('body.velocity.x',0);
+      this.coins.setAll('body.velocity.x',0);
+
+      // stop generating enemies
+      this.enemyTimer = Number.MAX_VALUE;
+
+      // stop generating coins
+      this.coinTimer = Number.MAX_VALUE;
+
+      var scoreboard = new Scoreboard(this.game);
+      scoreboard.show(this.score);
    },
 
    coinHit: function(player, coin){
@@ -145,7 +161,7 @@ FreeRunner.Game.prototype = {
 
       this.ground.stopScroll();
       this.background.stopScroll();
-      this.foreground.stopScroll();
+      //this.foreground.stopScroll();
 
       // stop enemies from moving
       this.enemies.setAll('body.velocity.x',0);
@@ -162,6 +178,10 @@ FreeRunner.Game.prototype = {
    },
 
    shutdown: function() {
-
+      this.coins.destroy();
+      this.enemies.destroy();
+      this.score = 0;
+      this.coinTimer = 0;
+      this.enemyTimer = 0;
    }
 }

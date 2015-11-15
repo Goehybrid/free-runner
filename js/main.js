@@ -1,4 +1,11 @@
-var game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.AUTO, '');
+var innerWidth = window.innerWidth;
+var innerHeight = window.innerHeight;
+
+if(innerWidth > innerHeight){
+   var game = new Phaser.Game(innerWidth,innerHeight, Phaser.CANVAS, '');
+}
+
+//var game = new Phaser.Game(window.innerWidth,600, Phaser.AUTO, '');
 
 game.state.add('Boot',FreeRunner.Boot);
 game.state.add('Preloader',FreeRunner.Preload);

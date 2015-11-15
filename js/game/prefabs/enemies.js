@@ -4,10 +4,10 @@ var Enemy = function(game, x, y, key, frame){
     // the key name of the object
     // frame specification
 
-    key='missile';
+    key='ufo';
     Phaser.Sprite.call(this, game, x, y, key, frame);
 
-    this.scale.setTo(0.1);
+    this.scale.setTo(1.1);
     this.anchor.setTo(0.5);
 
     this.animations.add('fly');
