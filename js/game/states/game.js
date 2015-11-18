@@ -5,7 +5,7 @@ FreeRunner.Game = function () {
    this.coinRate = 1000; // appear every second
    this.coinTimer = 0; // check every game loop if the coin was created
 
-   this.enemyRate = 500;
+   this.enemyRate = 1500;
    this.enemyTimer = 0;
 
    this.score = 0;
@@ -23,10 +23,6 @@ FreeRunner.Game.prototype = {
       this.game.world.bounds = new Phaser.Rectangle(0,0, this.game.width + 300, this.game.height);
       this.background = this.game.add.tileSprite(0, 0, this.game.width, this.game.height, 'background');
       this.background.autoScroll(-100, 0);
-
-      //this.foreground = this.game.add.tileSprite(0, 575, this.game.width, 231, 'foreground');
-      //this.foreground.scale.setTo(1.8);
-      //this.foreground.autoScroll(-120, 0);
 
       this.ground = this.game.add.tileSprite(0, this.game.height - 73, this.game.width, 73, 'ground');
       this.ground.autoScroll(-400, 0);
@@ -66,8 +62,8 @@ FreeRunner.Game.prototype = {
       this.rocketSound = this.game.add.audio('rocket');
       this.coinSound = this.game.add.audio('coin');
       this.deathSound = this.game.add.audio('death');
-      this.gameMusic = this.game.add.audio('gameMusic');
-      this.gameMusic.play('',0,true);
+      //this.gameMusic = this.game.add.audio('gameMusic');
+      //this.gameMusic.play('',0,true);
 
       // SETTING THE COIN SPAWNING POINT
       this.coinSpawnX = this.game.width + 64;
@@ -76,12 +72,11 @@ FreeRunner.Game.prototype = {
    update: function () {
       if (this.game.input.activePointer.isDown) {
          this.player.body.velocity.y -= 25;
-
          if(!this.rocketSound.isPlaying){
             this.rocketSound.play('',0,true,0.5);
-         } else {
-            this.rocketSound.stop();
          }
+      } else {
+         this.rocketSound.stop();
       }
 
       // PLAYER ANGLE
@@ -204,7 +199,8 @@ FreeRunner.Game.prototype = {
          enemy = new Enemy(this.game, 0, 0);
          this.enemies.add(enemy);
       }
-      // RESET THE COIN
+
+      // RESET THE ENEMIE
       enemy.reset(x, y);
       enemy.revive();
    },
@@ -213,8 +209,17 @@ FreeRunner.Game.prototype = {
       player.kill();
       this.ground.stopScroll();
       this.background.stopScroll();
-      this.gameMusic.stop();
+      this.rocketSound.stop();
+      //this.gameMusic.stop();
       this.deathSound.play();
+
+		// EXPLOSION
+      var explosion = this.game.add.sprite(player.body.x,player.body.y,"explosion");
+		explosion.anchor.setTo(0,0.25);
+		explosion.scale.setTo(6);
+		explosion.animations.add("explode",[0,1,2,3,4,5],false);
+      explosion.animations.play("explode").delay = 100;
+
 
       // stop enemies from moving
       this.enemies.setAll('body.velocity.x',0);
@@ -250,8 +255,16 @@ FreeRunner.Game.prototype = {
    enemyHit: function(player, enemy){
       player.kill();
       enemy.kill();
+      this.rocketSound.stop();
       this.deathSound.play();
-      this.gameMusic.stop();
+      //this.gameMusic.stop();
+
+		// EXPLOSION
+      var explosion = this.game.add.sprite(player.body.x,player.body.y,"explosion");
+		explosion.anchor.setTo(0,0.5);
+		explosion.scale.setTo(6);
+		explosion.animations.add("explode",[0,1,2,3,4,5],false);
+      explosion.animations.play("explode").delay = 100;
 
       this.ground.stopScroll();
       this.background.stopScroll();
