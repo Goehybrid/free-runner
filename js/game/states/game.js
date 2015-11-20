@@ -28,11 +28,12 @@ FreeRunner.Game.prototype = {
    create: function () {
 
 		this.game.world.bounds = new Phaser.Rectangle(0,0, this.game.width + 300, this.game.height);
+
       this.background = this.game.add.tileSprite(0, 0, this.game.width, this.game.height, 'background');
-      this.background.autoScroll(this.backgroundScrollSpeed, 0);
+      //this.background.autoScroll(this.backgroundScrollSpeed, 0);
 
       this.ground = this.game.add.tileSprite(0, this.game.height - 73, this.game.width, 73, 'ground');
-      this.ground.autoScroll(this.groundScrollSpeed, 0);
+      //this.ground.autoScroll(this.groundScrollSpeed, 0);
 
       // PLAYER
       this.player = this.add.sprite(100, this.game.height / 2, 'player');
