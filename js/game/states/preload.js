@@ -5,6 +5,7 @@ FreeRunner.Preload = function () {
 FreeRunner.Preload.prototype = {
 
    preload: function () {
+
       this.splash = this.add.sprite(this.game.world.centerX, this.game.world.centerY, 'logo');
       this.splash.anchor.setTo(0.5);
 

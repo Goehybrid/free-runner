@@ -5,7 +5,7 @@ FreeRunner.Game = function () {
    this.coinRate = 1000; // appear every second
    this.coinTimer = 0; // check every game loop if the coin was created
 
-   this.enemyRate = 1500;
+   this.enemyRate = 500;
    this.enemyTimer = 0;
 
    this.score = 0;
@@ -19,6 +19,8 @@ FreeRunner.Game = function () {
 	this.currentThreshold = 10;
 	this.backgroundScrollSpeed = -100;
 	this.groundScrollSpeed = -400;
+	this.enemyVelocity = -400;
+	this.coinVelocity = -400;
 };
 
 FreeRunner.Game.prototype = {
@@ -63,11 +65,17 @@ FreeRunner.Game.prototype = {
       // SCORE TEXT
       this.scoreText = this.game.add.bitmapText(10,10, 'minecraftia', 'Score: 0', 24);
 
+		// FPS
+		this.fps = this.game.add.bitmapText(10,60,'minecraftia','',24);
+
       // SOUNDS
       this.rocketSound = this.game.add.audio('rocket');
 		this.rocketSound.volume = 1.5;
+
       this.coinSound = this.game.add.audio('coin');
+
       this.deathSound = this.game.add.audio('death');
+
       this.gameMusic = this.game.add.audio('gameMusic');
       this.gameMusic.play('',0,true);
 		this.gameMusic.volume = 0.2;
@@ -103,7 +111,6 @@ FreeRunner.Game.prototype = {
 
       // COINS
       if (this.coinTimer < this.game.time.now) {
-         // A NEW COIN IS CREATED EVERY SECOND
          this.generateCoins();
          this.coinTimer = this.game.time.now + this.coinRate;
       }
@@ -130,18 +137,24 @@ FreeRunner.Game.prototype = {
 			this.backgroundScrollSpeed -= 50;
 			this.groundScrollSpeed -= 50;
 
-			this.increaseSpeed(this.background,this.backgroundScrollSpeed,this.ground,this.groundScrollSpeed);
+			this.increaseScrollSpeed(this.backgroundScrollSpeed,this.groundScrollSpeed);
+			this.increaseEnemiesSpeed();
+			this.increaseCoinsSpeed();
+
+			console.log("Background: ", this.backgroundScrollSpeed, "; Ground: ", this.groundScrollSpeed, "; Enemies: ", this.enemyVelocity, "; Coins: ", this.coinVelocity)
 		}
+
+		this.displayFPS();
    },
    createCoin: function () {
       // SET COORDINATES
       var x = this.game.width;
       // RANDOM NUMBER FOR HEIGHT < DEPENDS ON THE HEIGHT OF THE GROUND
-      var y = this.game.rnd.integerInRange(50, this.game.world.height - 192);
+      var y = this.game.rnd.integerInRange(20, this.game.world.height - 255);
       // CHECK FOR RECYCLING
       var coin = this.coins.getFirstExists(false);
       if (!coin) {
-         coin = new Coin(this.game, 0, 0);
+         coin = new Coin(this.game, 0, 0, "coins",this.coinVelocity);
          this.coins.add(coin);
       }
       // RESET THE COIN
@@ -164,11 +177,11 @@ FreeRunner.Game.prototype = {
                break;
             case 3:
                // create a small group of coins
-               this.createCoinGroup(2,2);
+               this.createCoinGroup(this.game.rnd.integerInRange(1,2),2);
                break;
             case 4:
                // create a large coin group
-               this.createCoinGroup(6,2);
+               this.createCoinGroup(this.game.rnd.integerInRange(2,6),this.game.rnd.integerInRange(2,6));
                break;
             default:
                // if case of error, set the previousCoinType to 0 and do nothing
@@ -194,7 +207,7 @@ FreeRunner.Game.prototype = {
       var coinColumnCounter = 0;
       var coin;
       for(var i = 0; i < columns * rows; i++){
-         coin = this.createCoin(this.spawnX, coinSpawnY);
+         coin = this.createCoin(this.spawnX, coinSpawnY, this.coinVelocity);
          coin.x = coin.x + (coinColumnCounter * coin.width) + (coinColumnCounter * this.coinSpacingX);
          coin.y = coinSpawnY + (coinRowCounter * coin.height) + (coinRowCounter * this.coinSpacingY);
          coinColumnCounter++;
@@ -212,14 +225,16 @@ FreeRunner.Game.prototype = {
       var y = this.game.rnd.integerInRange(20, this.game.world.height - this.ground.height);
       // CHECK FOR RECYCLING
       var enemy = this.enemies.getFirstExists(false);
+
       if (!enemy) {
-         enemy = new Enemy(this.game, 0, 0);
+         enemy = new Enemy(this.game, 0, 0, 'ufo', this.enemyVelocity);
          this.enemies.add(enemy);
       }
 
       // RESET THE ENEMIE
       enemy.reset(x, y);
       enemy.revive();
+
    },
 
    groundHit: function (player, ground) {
@@ -227,7 +242,6 @@ FreeRunner.Game.prototype = {
       this.ground.stopScroll();
       this.background.stopScroll();
       this.rocketSound.stop();
-      //this.gameMusic.stop();
       this.deathSound.play();
 
 		// EXPLOSION
@@ -257,7 +271,7 @@ FreeRunner.Game.prototype = {
       coin.kill();
       this.coinSound.play();
 
-      var dummyCoin = new Coin(this.game,coin.x,coin.y);
+      var dummyCoin = new Coin(this.game,coin.x,coin.y, -400);
       this.game.add.existing(dummyCoin);
       dummyCoin.animations.play('spin',40,true);
 
@@ -274,7 +288,6 @@ FreeRunner.Game.prototype = {
       enemy.kill();
       this.rocketSound.stop();
       this.deathSound.play();
-      //this.gameMusic.stop();
 
 		// EXPLOSION
       var explosion = this.game.add.sprite(player.body.x,player.body.y,"explosion");
@@ -285,7 +298,6 @@ FreeRunner.Game.prototype = {
 
       this.ground.stopScroll();
       this.background.stopScroll();
-      //this.foreground.stopScroll();
 
       // stop enemies from moving
       this.enemies.setAll('body.velocity.x',0);
@@ -301,10 +313,25 @@ FreeRunner.Game.prototype = {
       scoreboard.show(this.score);
    },
 
-	increaseSpeed: function(background,backgroundScroll,ground,groundScroll){
+	increaseScrollSpeed: function(backgroundScroll,groundScroll){
+		this.background.autoScroll(backgroundScroll,0);
+		this.ground.autoScroll(groundScroll,0);
+	},
 
-		background.autoScroll(backgroundScroll,0);
-		ground.autoScroll(groundScroll,0);
+	increaseEnemiesSpeed:function(){
+		this.enemyVelocity -= 75;
+	},
+
+	increaseCoinsSpeed: function(){
+		this.coinVelocity -= 75;
+		// changing the speed of already existing coins
+		for(var i=0; i < this.coins.children.lenght;i++){
+			this.coins[i].body.velocity.x = this.coinVelocity;
+		}
+	},
+
+	displayFPS: function(){
+		this.fps.setText("FPS: " + this.game.time.fps);
 	},
 
    shutdown: function() {
@@ -313,5 +340,11 @@ FreeRunner.Game.prototype = {
       this.score = 0;
       this.coinTimer = 0;
       this.enemyTimer = 0;
+
+		this.backgroundScrollSpeed = -400;
+		this.groundScrollSpeed = -100;
+
+		this.enemyVelocity = -400;
+		this.coinVelocity = -400;
    }
 }
