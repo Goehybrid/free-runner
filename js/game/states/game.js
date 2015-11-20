@@ -5,7 +5,7 @@ FreeRunner.Game = function () {
    this.coinRate = 1000; // appear every second
    this.coinTimer = 0; // check every game loop if the coin was created
 
-   this.enemyRate = 500;
+   this.enemyRate = 700;
    this.enemyTimer = 0;
 
    this.score = 0;
@@ -30,10 +30,10 @@ FreeRunner.Game.prototype = {
 		this.game.world.bounds = new Phaser.Rectangle(0,0, this.game.width + 300, this.game.height);
 
       this.background = this.game.add.tileSprite(0, 0, this.game.width, this.game.height, 'background');
-      //this.background.autoScroll(this.backgroundScrollSpeed, 0);
+      this.background.autoScroll(this.backgroundScrollSpeed, 0);
 
       this.ground = this.game.add.tileSprite(0, this.game.height - 73, this.game.width, 73, 'ground');
-      //this.ground.autoScroll(this.groundScrollSpeed, 0);
+      this.ground.autoScroll(this.groundScrollSpeed, 0);
 
       // PLAYER
       this.player = this.add.sprite(100, this.game.height / 2, 'player');
@@ -142,7 +142,6 @@ FreeRunner.Game.prototype = {
 			console.log("Background: ", this.backgroundScrollSpeed, "; Ground: ", this.groundScrollSpeed, "; Enemies: ", this.enemyVelocity, "; Coins: ", this.coinVelocity)
 		}
 
-		this.displayFPS();
    },
    createCoin: function () {
       // SET COORDINATES
@@ -200,7 +199,7 @@ FreeRunner.Game.prototype = {
 
    createCoinGroup: function(columns, rows){
       // create 4 coins in a group
-      var coinSpawnY = this.game.rnd.integerInRange(50, this.game.world.height - this.ground.height - 40);
+      var coinSpawnY = this.game.rnd.integerInRange(50, this.game.world.height - this.ground.height - 240);
       var coinRowCounter = 0;
       var coinColumnCounter = 0;
       var coin;
@@ -227,7 +226,9 @@ FreeRunner.Game.prototype = {
       if (!enemy) {
          enemy = new Enemy(this.game, 0, 0, 'ufo', this.enemyVelocity);
          this.enemies.add(enemy);
-      }
+      } else {
+
+		}
 
       // RESET THE ENEMIE
       enemy.reset(x, y);
