@@ -18,10 +18,10 @@ FreeRunner.Preload.prototype = {
       this.load.spritesheet('explosion','assets/images/explode.png',26,26,6);
 
 
-      this.load.audio('gameMusic', ['assets/audio/Pamgaea.mp3', 'assets/audio/Pamgaea.ogg']);
+      this.load.audio('gameMusic', ['assets/audio/space.mp3', 'assets/audio/space.ogg']);
       this.load.audio('rocket', 'assets/audio/launch.wav');
-      this.load.audio('coin', 'assets/audio/coin.wav');
-      this.load.audio('death', 'assets/audio/death.wav');
+      this.load.audio('coin', 'assets/audio/star.wav');
+      this.load.audio('death', 'assets/audio/explosion.wav');
 
       this.load.bitmapFont('minecraftia', 'assets/fonts/minecraftia/minecraftia.png', 'assets/fonts/minecraftia/minecraftia.xml');
 

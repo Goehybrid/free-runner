@@ -14,18 +14,23 @@ FreeRunner.Game = function () {
    this.coinSpawnX = null;
    this.coinSpacingX = 10;
    this.coinSpacingY = 10;
+
+	// the threshold the play has to reach to speed up scrolling speed
+	this.currentThreshold = 10;
+	this.backgroundScrollSpeed = -100;
+	this.groundScrollSpeed = -400;
 };
 
 FreeRunner.Game.prototype = {
 
    create: function () {
 
-      this.game.world.bounds = new Phaser.Rectangle(0,0, this.game.width + 300, this.game.height);
+		this.game.world.bounds = new Phaser.Rectangle(0,0, this.game.width + 300, this.game.height);
       this.background = this.game.add.tileSprite(0, 0, this.game.width, this.game.height, 'background');
-      this.background.autoScroll(-100, 0);
+      this.background.autoScroll(this.backgroundScrollSpeed, 0);
 
       this.ground = this.game.add.tileSprite(0, this.game.height - 73, this.game.width, 73, 'ground');
-      this.ground.autoScroll(-400, 0);
+      this.ground.autoScroll(this.groundScrollSpeed, 0);
 
       // PLAYER
       this.player = this.add.sprite(100, this.game.height / 2, 'player');
@@ -60,10 +65,12 @@ FreeRunner.Game.prototype = {
 
       // SOUNDS
       this.rocketSound = this.game.add.audio('rocket');
+		this.rocketSound.volume = 1.5;
       this.coinSound = this.game.add.audio('coin');
       this.deathSound = this.game.add.audio('death');
-      //this.gameMusic = this.game.add.audio('gameMusic');
-      //this.gameMusic.play('',0,true);
+      this.gameMusic = this.game.add.audio('gameMusic');
+      this.gameMusic.play('',0,true);
+		this.gameMusic.volume = 0.2;
 
       // SETTING THE COIN SPAWNING POINT
       this.coinSpawnX = this.game.width + 64;
@@ -73,7 +80,7 @@ FreeRunner.Game.prototype = {
       if (this.game.input.activePointer.isDown) {
          this.player.body.velocity.y -= 25;
          if(!this.rocketSound.isPlaying){
-            this.rocketSound.play('',0,true,0.5);
+            this.rocketSound.play('',0,true);
          }
       } else {
          this.rocketSound.stop();
@@ -115,11 +122,21 @@ FreeRunner.Game.prototype = {
 
       // OVERLAPING ENEMIES
       this.game.physics.arcade.overlap(this.player, this.enemies, this.enemyHit, null, this);
+
+		// CHECKING IF WE REACHED THE THRESHOLD
+		if(this.score >= this.currentThreshold){
+			// increase the scroll speed
+			this.currentThreshold += 10;
+			this.backgroundScrollSpeed -= 50;
+			this.groundScrollSpeed -= 50;
+
+			this.increaseSpeed(this.background,this.backgroundScrollSpeed,this.ground,this.groundScrollSpeed);
+		}
    },
    createCoin: function () {
       // SET COORDINATES
       var x = this.game.width;
-      // RANDOM NUMBER FOR HEIGHT< DEPENDS ON THE HEIGHT OF THE GROUND
+      // RANDOM NUMBER FOR HEIGHT < DEPENDS ON THE HEIGHT OF THE GROUND
       var y = this.game.rnd.integerInRange(50, this.game.world.height - 192);
       // CHECK FOR RECYCLING
       var coin = this.coins.getFirstExists(false);
@@ -172,7 +189,7 @@ FreeRunner.Game.prototype = {
 
    createCoinGroup: function(columns, rows){
       // create 4 coins in a group
-      var coinSpawnY = this.game.rnd.integerInRange(50, this.game.world.height - this.ground.height + 5);
+      var coinSpawnY = this.game.rnd.integerInRange(50, this.game.world.height - this.ground.height - 40);
       var coinRowCounter = 0;
       var coinColumnCounter = 0;
       var coin;
@@ -192,7 +209,7 @@ FreeRunner.Game.prototype = {
       // SET COORDINATES
       var x = this.game.width;
       // RANDOM NUMBER FOR HEIGHT< DEPENDS ON THE HEIGHT OF THE GROUND
-      var y = this.game.rnd.integerInRange(50, this.game.world.height - this.ground.height);
+      var y = this.game.rnd.integerInRange(20, this.game.world.height - this.ground.height);
       // CHECK FOR RECYCLING
       var enemy = this.enemies.getFirstExists(false);
       if (!enemy) {
@@ -283,6 +300,12 @@ FreeRunner.Game.prototype = {
       var scoreboard = new Scoreboard(this.game);
       scoreboard.show(this.score);
    },
+
+	increaseSpeed: function(background,backgroundScroll,ground,groundScroll){
+
+		background.autoScroll(backgroundScroll,0);
+		ground.autoScroll(groundScroll,0);
+	},
 
    shutdown: function() {
       this.coins.destroy();
