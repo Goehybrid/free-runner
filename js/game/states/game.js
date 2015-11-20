@@ -66,9 +66,6 @@ FreeRunner.Game.prototype = {
       // SCORE TEXT
       this.scoreText = this.game.add.bitmapText(10,10, 'minecraftia', 'Score: 0', 24);
 
-		// FPS
-		this.fps = this.game.add.bitmapText(10,60,'minecraftia','',24);
-
       // SOUNDS
       this.rocketSound = this.game.add.audio('rocket');
 		this.rocketSound.volume = 1.5;
@@ -329,10 +326,6 @@ FreeRunner.Game.prototype = {
 		for(var i=0; i < this.coins.children.lenght;i++){
 			this.coins[i].body.velocity.x = this.coinVelocity;
 		}
-	},
-
-	displayFPS: function(){
-		this.fps.setText("FPS: " + this.game.time.fps);
 	},
 
    shutdown: function() {
