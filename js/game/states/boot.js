@@ -9,6 +9,7 @@ FreeRunner.Boot.prototype = {
     },
     
     create: function(){
+		  //this.game.add.plugin(Phaser.Plugin.Debug);
         this.game.stage.backgroundColor = '#393939'; 
         
         // MULTITOUCH SUPPORT

@@ -16,6 +16,7 @@ FreeRunner.Preload.prototype = {
       this.load.spritesheet('coins', 'assets/images/stars.png', 65.14, 78, 7);
       this.load.spritesheet('player', 'assets/images/spaceship.png', 64, 29, 4);
       this.load.spritesheet('ufo', 'assets/images/ufo.png', 40, 30, 6);
+		this.load.spritesheet('boss','assets/images/boss.png', 40, 30, 6);
       this.load.spritesheet('explosion','assets/images/explode.png',26,26,6);
 
 

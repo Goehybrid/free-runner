@@ -5,8 +5,11 @@ FreeRunner.Game = function () {
    this.coinRate = 1000; // appear every second
    this.coinTimer = 0; // check every game loop if the coin was created
 
-   this.enemyRate = 700;
+   this.enemyRate = 900;
    this.enemyTimer = 0;
+
+	this.bossRate = 5000;
+	this.bossTimer = 0;
 
    this.score = 0;
    this.previousCoinType = null;
@@ -20,6 +23,7 @@ FreeRunner.Game = function () {
 	this.backgroundScrollSpeed = -100;
 	this.groundScrollSpeed = -400;
 	this.enemyVelocity = -400;
+	this.bossVelocity = -325;
 	this.coinVelocity = -400;
 };
 
@@ -62,6 +66,9 @@ FreeRunner.Game.prototype = {
 
       // ENEMIES GROUP
       this.enemies = this.game.add.group();
+
+		// BOSSES GROUP
+		this.bosses = this.game.add.group();
 
       // SCORE TEXT
       this.scoreText = this.game.add.bitmapText(10,10, 'minecraftia', 'Score: 0', 24);
@@ -119,6 +126,12 @@ FreeRunner.Game.prototype = {
          this.enemyTimer = this.game.time.now + this.enemyRate;
       }
 
+		// BOSS
+		if(this.bossTimer < this.game.time.now){
+			this.createBoss();
+			this.bossTimer = this.game.time.now + this.bossRate;
+		}
+
       // COLLISIONS
       this.game.physics.arcade.collide(this.player, this.ground, this.groundHit, null, this);
 
@@ -127,6 +140,7 @@ FreeRunner.Game.prototype = {
 
       // OVERLAPING ENEMIES
       this.game.physics.arcade.overlap(this.player, this.enemies, this.enemyHit, null, this);
+      this.game.physics.arcade.overlap(this.player, this.bosses, this.enemyHit, null, this);
 
 		// CHECKING IF WE REACHED THE THRESHOLD
 		if(this.score >= this.currentThreshold){
@@ -216,25 +230,40 @@ FreeRunner.Game.prototype = {
    },
 
    createEnemy: function () {
-      // SET COORDINATES
-      var x = this.game.width;
-      // RANDOM NUMBER FOR HEIGHT< DEPENDS ON THE HEIGHT OF THE GROUND
-      var y = this.game.rnd.integerInRange(20, this.game.world.height - this.ground.height);
-      // CHECK FOR RECYCLING
-      var enemy = this.enemies.getFirstExists(false);
 
-      if (!enemy) {
-         enemy = new Enemy(this.game, 0, 0, 'ufo', this.enemyVelocity);
-         this.enemies.add(enemy);
-      } else {
+		var randomEnemyNumber = this.game.rnd.integerInRange(1,3);
+		for(var i = 0; i < randomEnemyNumber;i++){
+			// SET COORDINATES
+			var x = this.game.width;
+			// RANDOM NUMBER FOR HEIGHT< DEPENDS ON THE HEIGHT OF THE GROUND
+			var y = this.game.rnd.integerInRange(20, this.game.world.height - this.ground.height);
+			// CHECK FOR RECYCLING
+			var enemy = this.enemies.getFirstExists(false);
 
+			if (!enemy) {
+				enemy = new Enemy(this.game, 0, 0, 'ufo', this.enemyVelocity);
+				this.enemies.add(enemy);
+			}
+			// RESET THE ENEMIE
+			enemy.reset(x, y);
+			enemy.revive();
 		}
 
-      // RESET THE ENEMIE
-      enemy.reset(x, y);
-      enemy.revive();
 
    },
+
+	createBoss: function(){
+		var x = this.game.width;
+		var y = this.game.rnd.integerInRange(20, this.game.world.height - this.ground.height);
+		var boss = this.bosses.getFirstExists(false);
+
+		if(!boss){
+			boss = new Boss(this.game,0,0,'boss', this.bossVelocity);
+			this.bosses.add(boss);
+		}
+		boss.reset(x,y);
+		boss.revive();
+	},
 
    groundHit: function (player, ground) {
       player.kill();
@@ -253,10 +282,12 @@ FreeRunner.Game.prototype = {
 
       // stop enemies from moving
       this.enemies.setAll('body.velocity.x',0);
+      this.bosses.setAll('body.velocity.x',0);
       this.coins.setAll('body.velocity.x',0);
 
       // stop generating enemies
       this.enemyTimer = Number.MAX_VALUE;
+		this.bossTimer = Number.MAX_VALUE;
 
       // stop generating coins
       this.coinTimer = Number.MAX_VALUE;
@@ -298,12 +329,14 @@ FreeRunner.Game.prototype = {
       this.ground.stopScroll();
       this.background.stopScroll();
 
-      // stop enemies from moving
+      // stop enemies and from moving
       this.enemies.setAll('body.velocity.x',0);
+      this.bosses.setAll('body.velocity.x',0);
       this.coins.setAll('body.velocity.x',0);
 
       // stop generating enemies
       this.enemyTimer = Number.MAX_VALUE;
+      this.bossTimer = Number.MAX_VALUE;
 
       // stop generating coins
       this.coinTimer = Number.MAX_VALUE;
@@ -318,11 +351,11 @@ FreeRunner.Game.prototype = {
 	},
 
 	increaseEnemiesSpeed:function(){
-		this.enemyVelocity -= 75;
+		this.enemyVelocity -= 45;
 	},
 
 	increaseCoinsSpeed: function(){
-		this.coinVelocity -= 75;
+		this.coinVelocity -= 45;
 		// changing the speed of already existing coins
 		for(var i=0; i < this.coins.children.lenght;i++){
 			this.coins[i].body.velocity.x = this.coinVelocity;
@@ -332,14 +365,18 @@ FreeRunner.Game.prototype = {
    shutdown: function() {
       this.coins.destroy();
       this.enemies.destroy();
+		this.bosses.destroy();
+
       this.score = 0;
       this.coinTimer = 0;
       this.enemyTimer = 0;
+		this.bossTimer = 0;
 
 		this.backgroundScrollSpeed = -400;
 		this.groundScrollSpeed = -100;
 
 		this.enemyVelocity = -400;
+		this.bossVelocity = -325;
 		this.coinVelocity = -400;
    }
 }

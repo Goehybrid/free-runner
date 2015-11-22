@@ -1,13 +1,13 @@
-var Enemy = function(game, x, y, key, velocity){
+var Boss = function(game, x, y, key, velocity){
     // game - reference to the game
     // x,y - coordinates
     // the key name of the object
     // frame specification
 
-	 key="ufo";
+	 key="boss";
     Phaser.Sprite.call(this, game, x, y, key);
 
-    this.scale.setTo(1.5);
+    this.scale.setTo(2.5);
     this.anchor.setTo(0.5);
 
 	 this.velocity = velocity;
@@ -16,19 +16,19 @@ var Enemy = function(game, x, y, key, velocity){
     this.game.physics.arcade.enableBody(this);
     this.body.allowGravity = false;
 
-    // check if enemie is outside of the game world
+    // check if boss is outside of the game world
     this.checkWorldBounds = true;
     this.onOutOfBoundsKill = true;
 
-    // events when enemie is revived
+    // events when boss is revived
     this.events.onRevived.add(this.onRevived, this);
 }
 
-Enemy.prototype = Object.create(Phaser.Sprite.prototype);
-Enemy.prototype.constructor = Enemy;
+Boss.prototype = Object.create(Phaser.Sprite.prototype);
+Boss.prototype.constructor = Boss;
 
-Enemy.prototype.onRevived = function(){
-    this.game.add.tween(this).to({y:this.y-16}, 500, Phaser.Easing.Linear.NONE, true, 0, Infinity, true);
+Boss.prototype.onRevived = function(){
+    this.game.add.tween(this).to({y:this.y-8}, 600, Phaser.Easing.Linear.NONE, true, 0, Infinity, true);
     this.body.velocity.x = this.velocity;
     this.animations.play('fly',10,true);
 }
