@@ -1,3 +1,8 @@
+// to-do:
+// * boss speed
+// * missiles
+// * refactoring
+
 FreeRunner.Game = function () {
    this.playerMinAngle = -20;
    this.playerMaxAngle = 20;
@@ -31,6 +36,7 @@ FreeRunner.Game.prototype = {
 
    create: function () {
 
+		// setting the game boundaries
 		this.game.world.bounds = new Phaser.Rectangle(0,0, this.game.width + 300, this.game.height);
 
       this.background = this.game.add.tileSprite(0, 0, this.game.width, this.game.height, 'background');
@@ -265,25 +271,20 @@ FreeRunner.Game.prototype = {
 		boss.revive();
 	},
 
-   groundHit: function (player, ground) {
+   groundHit: function (player) {
+		var player = player;
       player.kill();
+
       this.ground.stopScroll();
       this.background.stopScroll();
       this.rocketSound.stop();
       this.deathSound.play();
 
 		// EXPLOSION
-      var explosion = this.game.add.sprite(player.body.x,player.body.y,"explosion");
-		explosion.anchor.setTo(0,0.25);
-		explosion.scale.setTo(6);
-		explosion.animations.add("explode",[0,1,2,3,4,5],false);
-      explosion.animations.play("explode").delay = 100;
+		this.showExplosion(player);
 
-
-      // stop enemies from moving
-      this.enemies.setAll('body.velocity.x',0);
-      this.bosses.setAll('body.velocity.x',0);
-      this.coins.setAll('body.velocity.x',0);
+      // stop all sprites
+      this.stopSprites();
 
       // stop generating enemies
       this.enemyTimer = Number.MAX_VALUE;
@@ -314,25 +315,22 @@ FreeRunner.Game.prototype = {
    },
 
    enemyHit: function(player, enemy){
+		var player = player, enemy = enemy;
+
       player.kill();
       enemy.kill();
+
       this.rocketSound.stop();
       this.deathSound.play();
 
 		// EXPLOSION
-      var explosion = this.game.add.sprite(player.body.x,player.body.y,"explosion");
-		explosion.anchor.setTo(0,0.5);
-		explosion.scale.setTo(6);
-		explosion.animations.add("explode",[0,1,2,3,4,5],false);
-      explosion.animations.play("explode").delay = 100;
+		this.showExplosion(player);
 
       this.ground.stopScroll();
       this.background.stopScroll();
 
-      // stop enemies and from moving
-      this.enemies.setAll('body.velocity.x',0);
-      this.bosses.setAll('body.velocity.x',0);
-      this.coins.setAll('body.velocity.x',0);
+      // stop all sprites
+      this.stopSprites();
 
       // stop generating enemies
       this.enemyTimer = Number.MAX_VALUE;
@@ -360,6 +358,20 @@ FreeRunner.Game.prototype = {
 		for(var i=0; i < this.coins.children.lenght;i++){
 			this.coins[i].body.velocity.x = this.coinVelocity;
 		}
+	},
+
+	showExplosion: function(player){
+		var explosion = this.game.add.sprite(player.body.x,player.body.y,"explosion");
+		explosion.anchor.setTo(0,0.5);
+		explosion.scale.setTo(6);
+		explosion.animations.add("explode",[0,1,2,3,4,5],false);
+      explosion.animations.play("explode").delay = 100;
+	},
+
+	stopSprites: function(){
+		this.enemies.setAll('body.velocity.x',0);
+      this.bosses.setAll('body.velocity.x',0);
+      this.coins.setAll('body.velocity.x',0);
 	},
 
    shutdown: function() {
