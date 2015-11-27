@@ -2,6 +2,7 @@
 // * boss speed
 // * missiles
 // * refactoring
+// * onBoundKill
 
 FreeRunner.Game = function () {
    this.playerMinAngle = -20;
@@ -29,6 +30,7 @@ FreeRunner.Game = function () {
 	this.groundScrollSpeed = -400;
 	this.enemyVelocity = -400;
 	this.bossVelocity = -325;
+	this.missileVelocity = -375;
 	this.coinVelocity = -400;
 };
 
@@ -75,6 +77,10 @@ FreeRunner.Game.prototype = {
 
 		// BOSSES GROUP
 		this.bosses = this.game.add.group();
+
+		// MISSILES GROUP
+		this.missiles = this.game.add.group();
+
 
       // SCORE TEXT
       this.scoreText = this.game.add.bitmapText(10,10, 'minecraftia', 'Score: 0', 24);
@@ -137,6 +143,10 @@ FreeRunner.Game.prototype = {
 			this.createBoss();
 			this.bossTimer = this.game.time.now + this.bossRate;
 		}
+
+		// MISSILES
+		//this.missiles.forEach(game.physics.arcade.moveToPointer, game.physics.arcade, false, 200);
+		//this.missiles.forEach(this.game.physics.arcade.accelerateToXY(this.body.position,this.player.body.position.x,this.player.body.position.y,60,500,500));
 
       // COLLISIONS
       this.game.physics.arcade.collide(this.player, this.ground, this.groundHit, null, this);
@@ -254,8 +264,6 @@ FreeRunner.Game.prototype = {
 			enemy.reset(x, y);
 			enemy.revive();
 		}
-
-
    },
 
 	createBoss: function(){
@@ -263,12 +271,31 @@ FreeRunner.Game.prototype = {
 		var y = this.game.rnd.integerInRange(20, this.game.world.height - this.ground.height);
 		var boss = this.bosses.getFirstExists(false);
 
+		// the following code can be refactored
 		if(!boss){
 			boss = new Boss(this.game,0,0,'boss', this.bossVelocity);
 			this.bosses.add(boss);
+			this.createMissile(x,y);
 		}
 		boss.reset(x,y);
 		boss.revive();
+	},
+
+	createMissile: function(x_coord,y_coord){
+		// spawn missiles from the first existing boss position
+		var x = x_coord;
+		var y = y_coord;
+
+		// creating an actual missile
+		var missile = this.missiles.getFirstExists(false);
+		if(!missile){
+			missile = new Missile(this.game,0,0,'missile',this.missileVelocity);
+			this.missiles.add(missile);
+		}
+		missile.reset(x,y);
+		missile.revive();
+
+		console.log("# of missiles: " + this.missiles.length);
 	},
 
    groundHit: function (player) {

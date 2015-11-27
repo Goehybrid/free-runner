@@ -4,10 +4,10 @@ var Missile = function(game, x, y, key, velocity){
     // the key name of the object
     // frame specification
 
-	 key="Missile";
+	 key="missile";
     Phaser.Sprite.call(this, game, x, y, key);
 
-    this.scale.setTo(2.5);
+    this.scale.setTo(0.3);
     this.anchor.setTo(0.5);
 
 	 this.velocity = velocity;

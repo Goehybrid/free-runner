@@ -4,11 +4,7 @@ FreeRunner.MainMenu.prototype = {
     create: function(){
         this.background = this.game.add.tileSprite(0, 0, this.game.width, this.game.height, 'background');
         this.background.autoScroll(-100, 0);
-        
-        //this.foreground = this.game.add.tileSprite(0, 475, this.game.width, 231, 'foreground');
-        //this.foreground.scale.setTo(1.8);
-        //this.foreground.autoScroll(-150, 0);
-        
+
         this.ground = this.game.add.tileSprite(0, this.game.height - 73, this.game.width, 73, 'ground');
         this.ground.autoScroll(-400, 0);
         
