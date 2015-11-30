@@ -7,7 +7,6 @@ var Enemy = function(game, x, y, key, velocity){
 	 key="ufo";
     Phaser.Sprite.call(this, game, x, y, key);
 
-    this.scale.setTo(1.5);
     this.anchor.setTo(0.5);
 
 	 this.velocity = velocity;
@@ -18,7 +17,7 @@ var Enemy = function(game, x, y, key, velocity){
 
     // check if enemie is outside of the game world
     this.checkWorldBounds = true;
-    this.onOutOfBoundsKill = true;
+    this.outOfBoundsKill = true;
 
     // events when enemie is revived
     this.events.onRevived.add(this.onRevived, this);

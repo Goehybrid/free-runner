@@ -11,7 +11,7 @@ FreeRunner.MainMenu.prototype = {
         // PLAYER
         this.player = this.add.sprite(100, this.game.height/2,'player');
         this.player.anchor.setTo(0.5);
-        this.player.scale.setTo(1.5);
+
         
         this.player.animations.add('fly', [0, 1, 2, 3, 2, 1]);
         this.player.animations.play('fly', 8, true);

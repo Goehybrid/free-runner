@@ -7,7 +7,7 @@ var Boss = function(game, x, y, key, velocity){
 	 key="boss";
     Phaser.Sprite.call(this, game, x, y, key);
 
-    this.scale.setTo(2.5);
+    this.scale.setTo(2);
     this.anchor.setTo(0.5);
 
 	 this.velocity = velocity;
@@ -18,7 +18,7 @@ var Boss = function(game, x, y, key, velocity){
 
     // check if boss is outside of the game world
     this.checkWorldBounds = true;
-    this.onOutOfBoundsKill = true;
+    this.outOfBoundsKill = true;
 
     // events when boss is revived
     this.events.onRevived.add(this.onRevived, this);

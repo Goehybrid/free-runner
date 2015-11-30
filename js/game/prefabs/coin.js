@@ -7,7 +7,7 @@ var Coin = function(game, x, y, key, velocity,frame){
     key="coins";
     Phaser.Sprite.call(this, game, x, y, key, frame);
     
-    this.scale.setTo(0.5);
+    this.scale.setTo(0.3);
     this.anchor.setTo(0.5);
 
 	 this.velocity = velocity;
@@ -18,7 +18,7 @@ var Coin = function(game, x, y, key, velocity,frame){
 
     // check if coin is outside of the game world
     this.checkWorldBounds = true;
-    this.onOutOfBoundsKill = true;
+    this.outOfBoundsKill = true;
 
     // events when coin is killed/revived
     this.events.onKilled.add(this.onKilled, this);
