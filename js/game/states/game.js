@@ -3,38 +3,21 @@
 // * refactoring
 // * increase enemies and coins rate
 // * prevent boss from spawning missiles when close to player
+// * timer for missiles
+// * stop boss from generating missiles
 
-FreeRunner.Game = function () {
-   this.playerMinAngle = -20;
-   this.playerMaxAngle = 20;
+SpaceChase.Game = function () {
+   this.playerMinAngle = -25;
+   this.playerMaxAngle = 25;
 
-   this.coinRate = 1000; // appear every second
-   this.coinTimer = 0; // check every game loop if the coin was created
-
-   this.enemyRate = 900;
-   this.enemyTimer = 0;
-
-	this.bossRate = 4500;
-	this.bossTimer = 0;
-
-	this.missileRate = 900;
-	this.missileTimer = 0;
-
-   this.score = 0;
-   this.previousCoinType = null;
-
-   this.coinSpawnX = null;
-   this.coinSpacingX = 10;
-   this.coinSpacingY = 10;
-
-	// the threshold the play has to reach to speed up scrolling speed
-	this.currentThreshold = 10;
-	this.resetInitialSpeedParams();
 };
 
-FreeRunner.Game.prototype = {
+SpaceChase.Game.prototype = {
 
    create: function () {
+
+		// the threshold the play has to reach to speed up scrolling speed
+		this.resetInitialParams();
 
 		// setting the game boundaries
 		this.game.world.bounds = new Phaser.Rectangle(0,0, this.game.width + 300, this.game.height);
@@ -50,11 +33,11 @@ FreeRunner.Game.prototype = {
       this.player.anchor.setTo(0.5);
 
       this.player.animations.add('fly', [0, 1, 2, 3, 2, 1]);
-      this.player.animations.play('fly', 8, true);
+      this.player.animations.play('fly', 10, true);
 
       // PHYSICS SETUP
       this.game.physics.startSystem(Phaser.Physics.ARCADE);
-      this.game.physics.arcade.gravity.y = 600;
+      this.game.physics.arcade.gravity.y = 700;
 
       // GROUND PHYSICS
       this.game.physics.arcade.enableBody(this.ground);
@@ -91,13 +74,20 @@ FreeRunner.Game.prototype = {
 
       this.gameMusic = this.game.add.audio('gameMusic');
       this.gameMusic.play('',0,true);
-		this.gameMusic.volume = 0.2;
+		this.gameMusic.volume = 0.09;
 
       // SETTING THE COIN SPAWNING POINT
       this.coinSpawnX = this.game.width + 64;
+
+
    },
 
    update: function () {
+		if(!this.gameMusic.isPlaying && this.bossTimer !== Number.MAX_VALUE){
+			this.gameMusic.play('',0,true);
+			this.gameMusic.volume = 0.09;
+		}
+
       if (this.game.input.activePointer.isDown) {
          this.player.body.velocity.y -= 25;
          if(!this.rocketSound.isPlaying){
@@ -154,13 +144,13 @@ FreeRunner.Game.prototype = {
 		// CHECKING IF WE REACHED THE THRESHOLD
 		if(this.score >= this.currentThreshold){
 			// increase the scroll speed
-			this.currentThreshold +=10;
+			this.currentThreshold += 10;
 			this.backgroundScrollSpeed -= 50;
 			this.groundScrollSpeed -= 50;
 
 			this.increaseScrollSpeed(this.backgroundScrollSpeed,this.groundScrollSpeed);
-			this.increaseEnemiesSpeed();
-			this.increaseCoinsSpeed();
+			this.enhanceEnemies();
+			this.enhanceCoins();
 
 			console.log("Background: ", this.backgroundScrollSpeed, "; Ground: ", this.groundScrollSpeed, "; Enemies: ", this.enemyVelocity, "; Coins: ", this.coinVelocity)
 		}
@@ -261,28 +251,28 @@ FreeRunner.Game.prototype = {
    },
 
 	createBoss: function(){
-		var self = this;
-		var x = this.game.width;
-		var y = this.game.rnd.integerInRange(20, this.game.world.height - this.ground.height);
-		var boss = this.bosses.getFirstExists(false);
-		var numOfMissiles = 0;
+			var self = this;
 
-		// the following code can be refactored
-		if(!boss){
-			boss = new Boss(this.game,0,0,'boss', this.bossVelocity);
-			this.bosses.add(boss);
-		}
+			var x = this.game.width;
+			var y = this.game.rnd.integerInRange(20, this.game.world.height - this.ground.height);
+			var boss = this.bosses.getFirstExists(false);
 
-		boss.update = function(){
-			if(self.missileTimer < self.game.time.now){
-				self.createMissile(boss);
-				self.missileTimer = self.game.time.now + self.missileRate;
+			// the following code can be refactored
+			if(!boss){
+				boss = new Boss(this.game,0,0,'boss', this.bossVelocity);
+				boss.missileTimer = this.missileTimer;
+				this.bosses.add(boss);
 			}
-		}
 
+			boss.update = function(){
+				if(boss.missileTimer < self.game.time.now){
+					self.createMissile(boss);
+					boss.missileTimer = self.game.time.now + self.missileRate;
+				}
+			}
 
-		boss.reset(x,y);
-		boss.revive();
+			boss.reset(x,y);
+			boss.revive();
 	},
 
 	createMissile: function(boss){
@@ -306,10 +296,9 @@ FreeRunner.Game.prototype = {
 		var player = player;
       player.kill();
 
-      this.ground.stopScroll();
-      this.background.stopScroll();
       this.rocketSound.stop();
       this.deathSound.play();
+		this.gameMusic.stop();
 
 		// play explosion animation
 		this.showExplosion(player);
@@ -346,13 +335,11 @@ FreeRunner.Game.prototype = {
       enemy.kill();
 
       this.rocketSound.stop();
+		this.gameMusic.stop();
       this.deathSound.play();
 
 		// EXPLOSION
 		this.showExplosion(player);
-
-      this.ground.stopScroll();
-      this.background.stopScroll();
 
       // stop all sprites
       this.stopSprites();
@@ -366,14 +353,14 @@ FreeRunner.Game.prototype = {
 		this.ground.autoScroll(groundScroll,0);
 	},
 
-	increaseEnemiesSpeed:function(){
+	enhanceEnemies: function(){
 		this.enemyVelocity -= 50;
 		this.bossVelocity -= 30;
 		this.missileVelocity = this.bossVelocity * 1.9;
 	},
 
-	increaseCoinsSpeed: function(){
-		this.coinVelocity +=50;
+	enhanceCoins: function(){
+		this.coinVelocity -= 50;
 		// changing the speed of already existing coins
 		for(var i=0; i < this.coins.children.lenght;i++){
 			this.coins[i].body.velocity.x = this.coinVelocity;
@@ -393,9 +380,13 @@ FreeRunner.Game.prototype = {
       this.enemyTimer = Number.MAX_VALUE;
       this.bossTimer = Number.MAX_VALUE;
 		this.missileTimer = Number.MAX_VALUE;
+		// for each boss disable timer
 
 		// stop generating coins
       this.coinTimer = Number.MAX_VALUE;
+
+		this.ground.stopScroll();
+      this.background.stopScroll();
 
 		// set velocity of existing sprites to 0
 		this.enemies.setAll('body.velocity.x',0);
@@ -404,33 +395,48 @@ FreeRunner.Game.prototype = {
       this.missiles.setAll('body.velocity.x',0);
 	},
 
-	resetInitialSpeedParams: function(){
+	resetInitialParams: function(){
+		this.score = 0;
+		this.previousCoinType = null;
+
+		this.coinRate = 2000; // appear every second
+		this.coinTimer = 0; // check every game loop if the coin was created
+
+		this.enemyRate = 900;
+		this.enemyTimer = 0;
+
+		this.bossRate = 3000;
+		this.bossTimer = 0;
+
+		// do something with it to make all boss shoot missiles
+		this.missileRate = 900;
+		this.missileTimer = 0;
+
+		this.coinSpawnX = null;
+		this.coinSpacingX = 10;
+		this.coinSpacingY = 10;
+		this.coinVelocity = -400;
+
 		this.backgroundScrollSpeed = -400;
 		this.groundScrollSpeed = -100;
 
-		this.score = 0;
 		this.currentThreshold = 10;
 
 		this.enemyVelocity = -400;
 		this.bossVelocity = -275;
-		this.missileVelocity = this.bossVelocity * 1.9;
+		this.missileVelocity = this.bossVelocity * 3;
 
-		this.coinVelocity = -400;
+
 	},
 
    shutdown: function() {
-		this.gameMusic.volume = 0.1;
 
       this.coins.destroy();
       this.enemies.destroy();
 		this.bosses.destroy();
 		this.missiles.destroy();
 
-      this.coinTimer = 0;
-      this.enemyTimer = 0;
-		this.bossTimer = 0;
-		this.missileTimer = 0;
-
-		this.resetInitialSpeedParams();
+		this.resetInitialParams();
    }
+
 }

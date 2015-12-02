@@ -1,8 +1,8 @@
-var FreeRunner = function(){};
+var SpaceChase = function(){};
 
-FreeRunner.Boot = function(){};
+SpaceChase.Boot = function(){};
 
-FreeRunner.Boot.prototype = {
+SpaceChase.Boot.prototype = {
     /* ADD IMAGES HERE */
     preload: function(){
         this.load.image('logo','assets/images/logo.png');

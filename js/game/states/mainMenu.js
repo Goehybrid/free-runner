@@ -1,6 +1,6 @@
-FreeRunner.MainMenu = function(){};
+SpaceChase.MainMenu = function(){};
 
-FreeRunner.MainMenu.prototype = {
+SpaceChase.MainMenu.prototype = {
     create: function(){
         this.background = this.game.add.tileSprite(0, 0, this.game.width, this.game.height, 'background');
         this.background.autoScroll(-100, 0);

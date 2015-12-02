@@ -1,8 +1,8 @@
-FreeRunner.Preload = function () {
+SpaceChase.Preload = function () {
    this.ready = false;
 };
 
-FreeRunner.Preload.prototype = {
+SpaceChase.Preload.prototype = {
 
    preload: function () {
 
@@ -19,9 +19,10 @@ FreeRunner.Preload.prototype = {
 		this.load.spritesheet('boss','assets/images/boss.png', 40, 30, 6);
 		this.load.spritesheet('missile','assets/images/missile.png',361, 218, 4);
       this.load.spritesheet('explosion','assets/images/explode.png',26,26,6);
+      this.load.spritesheet('exhaust','assets/images/flame.png',200,33,6);
 
 
-      this.load.audio('gameMusic', ['assets/audio/space.mp3', 'assets/audio/space.ogg']);
+      this.load.audio('gameMusic','assets/audio/theme.wav');
       this.load.audio('rocket', 'assets/audio/launch.wav');
       this.load.audio('coin', 'assets/audio/star.wav');
       this.load.audio('death', 'assets/audio/explosion.wav');
