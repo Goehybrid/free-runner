@@ -52,6 +52,7 @@ Scoreboard.prototype.show = function(score){
       newHighScoreText.tint = 0x43bef7;
       newHighScoreText.x = gameOverText.x + gameOverText.textWidth + 40;
       newHighScoreText.angle = 45;
+		//add tween here
       this.add(newHighScoreText);
    }
 

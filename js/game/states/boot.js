@@ -18,16 +18,6 @@ SpaceChase.Boot.prototype = {
             // DESKTOP SETTINGS
             this.scale.pageAlignHorizontally = true;
             this.scale.pageAlignVertically = true;
-        } else {
-            // MOBILE SETTINGS
-            this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-            this.scale.minWidth = 568;
-            this.scale.minHeight = 600;
-            this.scale.maxWidth = 2048;
-            this.scale.maxHeight = 1536;
-            this.scale.forceLandscape = true;
-            this.scale.pageAlignHorizontally = true;
-            this.scale.setScreenSize(true);
         }
         
         this.state.start('Preloader');

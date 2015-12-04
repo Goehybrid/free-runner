@@ -6,8 +6,8 @@ SpaceChase.Preload.prototype = {
 
    preload: function () {
 
-      this.splash = this.add.sprite(this.game.world.centerX, this.game.world.centerY, 'logo');
-      this.splash.anchor.setTo(0.5);
+      this.logo = this.add.sprite(this.game.world.centerX, this.game.world.centerY, 'logo');
+      this.logo.anchor.setTo(0.5);
 
       // DROP ASSETS HERE
       this.load.image('ground', 'assets/images/dirt.gif');
@@ -35,10 +35,13 @@ SpaceChase.Preload.prototype = {
 
    create: function () {
 
-      // LOADING TEXT
+      // adding a loading text to the game --> (x-coord,y-coord,key,text value, font size)
       this.loadingText = this.game.add.bitmapText(0, 0, 'minecraftia', 'Loading', 32);
-      this.loadingText.x = this.game.width / 2 - this.loadingText.textWidth / 2;
-      this.loadingText.y = this.game.height / 2 + this.splash.height / 2;
+      this.loadingText.x = this.game.width / 2;
+      this.loadingText.y = this.game.height / 2 + this.logo.height / 2;
+
+		// adding animation to text --> (object).to(properties, duration,ease,autostart,delay,repeat,yoyo)
+		this.game.add.tween(this.loadingText).to({x: this.loadingText.x-200}, 500, Phaser.Easing.Linear.NONE, true, 0, Infinity, true);
    },
 
    update: function () {

@@ -1,22 +1,19 @@
 // to-do:
-// * boss speed
+// * play sound when threshold increases
 // * refactoring
 // * increase enemies and coins rate
 // * prevent boss from spawning missiles when close to player
-// * timer for missiles
-// * stop boss from generating missiles
+// * boss and missile inherit from enemy
 
 SpaceChase.Game = function () {
-   this.playerMinAngle = -25;
-   this.playerMaxAngle = 25;
-
+   this.playerMinAngle = -23;
+   this.playerMaxAngle = 23;
 };
 
 SpaceChase.Game.prototype = {
 
    create: function () {
 
-		// the threshold the play has to reach to speed up scrolling speed
 		this.resetInitialParams();
 
 		// setting the game boundaries
@@ -265,7 +262,7 @@ SpaceChase.Game.prototype = {
 			}
 
 			boss.update = function(){
-				if(boss.missileTimer < self.game.time.now){
+				if(boss.missileTimer < self.game.time.now && self.missileTimer !== Number.MAX_VALUE){
 					self.createMissile(boss);
 					boss.missileTimer = self.game.time.now + self.missileRate;
 				}
@@ -396,8 +393,14 @@ SpaceChase.Game.prototype = {
 	},
 
 	resetInitialParams: function(){
+		this.currentThreshold = 10;
 		this.score = 0;
+
 		this.previousCoinType = null;
+		this.coinSpawnX = null;
+		this.coinSpacingX = 10;
+		this.coinSpacingY = 10;
+		this.coinVelocity = -400;
 
 		this.coinRate = 2000; // appear every second
 		this.coinTimer = 0; // check every game loop if the coin was created
@@ -408,29 +411,19 @@ SpaceChase.Game.prototype = {
 		this.bossRate = 3000;
 		this.bossTimer = 0;
 
-		// do something with it to make all boss shoot missiles
 		this.missileRate = 900;
 		this.missileTimer = 0;
 
-		this.coinSpawnX = null;
-		this.coinSpacingX = 10;
-		this.coinSpacingY = 10;
-		this.coinVelocity = -400;
-
 		this.backgroundScrollSpeed = -400;
 		this.groundScrollSpeed = -100;
-
-		this.currentThreshold = 10;
 
 		this.enemyVelocity = -400;
 		this.bossVelocity = -275;
 		this.missileVelocity = this.bossVelocity * 3;
 
-
 	},
 
    shutdown: function() {
-
       this.coins.destroy();
       this.enemies.destroy();
 		this.bosses.destroy();

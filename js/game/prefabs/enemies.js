@@ -27,7 +27,7 @@ Enemy.prototype = Object.create(Phaser.Sprite.prototype);
 Enemy.prototype.constructor = Enemy;
 
 Enemy.prototype.onRevived = function(){
-    this.game.add.tween(this).to({y:this.y-16}, 500, Phaser.Easing.Linear.NONE, true, 0, Infinity, true);
+    this.game.add.tween(this).to({y:this.y-26}, 500, Phaser.Easing.Linear.NONE, true, 0, Infinity, true);
     this.body.velocity.x = this.velocity;
     this.animations.play('fly',10,true);
 }
