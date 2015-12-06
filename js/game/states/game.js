@@ -1,7 +1,7 @@
 // to-do:
 // * play sound when threshold increases
 // * refactoring
-// * increase enemies and coins rate
+// * increase enemies and Stars rate
 
 SpaceChase.Game = function () {
    this.playerMinAngle = -23;
@@ -43,11 +43,11 @@ SpaceChase.Game.prototype = {
       this.game.physics.arcade.enableBody(this.player);
       this.player.body.collideWorldBounds = true;
 
-      // COINS GROUP
-      this.coins = this.game.add.group();
+      // StarS GROUP
+      this.stars = this.game.add.group();
 
       // ENEMIES GROUP
-      this.enemies = this.game.add.group();
+      this.ufos = this.game.add.group();
 
 		// BOSSES GROUP
 		this.bosses = this.game.add.group();
@@ -65,7 +65,7 @@ SpaceChase.Game.prototype = {
 
 		this.missileSound = this.game.add.audio('missile');
 
-      this.coinSound = this.game.add.audio('coin');
+      this.starSound = this.game.add.audio('star');
 
       this.deathSound = this.game.add.audio('death');
 
@@ -73,8 +73,8 @@ SpaceChase.Game.prototype = {
       this.gameMusic.play('',0,true);
 		this.gameMusic.volume = 0.09;
 
-      // SETTING THE COIN SPAWNING POINT
-      this.coinSpawnX = this.game.width + 64;
+      // SETTING THE Star SPAWNING POINT
+      this.starSpawnX = this.game.width + 64;
 
 
    },
@@ -110,16 +110,16 @@ SpaceChase.Game.prototype = {
          }
       }
 
-      // COINS
-      if (this.coinTimer < this.game.time.now) {
-         this.generateCoins();
-         this.coinTimer = this.game.time.now + this.coinRate;
+      // StarS
+      if (this.starTimer < this.game.time.now) {
+         this.generateStars();
+         this.starTimer = this.game.time.now + this.starRate;
       }
 
       // ENEMIES
-      if (this.enemyTimer < this.game.time.now) {
+      if (this.ufoTimer < this.game.time.now) {
          this.createEnemy();
-         this.enemyTimer = this.game.time.now + this.enemyRate;
+         this.ufoTimer = this.game.time.now + this.ufoRate;
       }
 
 		// BOSS
@@ -131,11 +131,11 @@ SpaceChase.Game.prototype = {
 		// COLLISIONS
       this.game.physics.arcade.collide(this.player, this.ground, this.groundHit, null, this);
 
-      // OVERLAPING COINS
-      this.game.physics.arcade.overlap(this.player, this.coins, this.coinHit, null, this);
+      // OVERLAPING StarS
+      this.game.physics.arcade.overlap(this.player, this.stars, this.starHit, null, this);
 
       // OVERLAPING ENEMIES
-      this.game.physics.arcade.overlap(this.player, this.enemies, this.enemyHit, null, this);
+      this.game.physics.arcade.overlap(this.player, this.ufos, this.enemyHit, null, this);
       this.game.physics.arcade.overlap(this.player, this.bosses, this.enemyHit, null, this);
       this.game.physics.arcade.overlap(this.player, this.missiles, this.enemyHit, null, this);
 
@@ -148,80 +148,80 @@ SpaceChase.Game.prototype = {
 
 			this.increaseScrollSpeed(this.backgroundScrollSpeed,this.groundScrollSpeed);
 			this.enhanceEnemies();
-			this.enhanceCoins();
+			this.enhanceStars();
 
-			console.log("Background: ", this.backgroundScrollSpeed, "; Ground: ", this.groundScrollSpeed, "; Enemies: ", this.enemyVelocity, "; Coins: ", this.coinVelocity)
+			console.log("Background: ", this.backgroundScrollSpeed, "; Ground: ", this.groundScrollSpeed, "; Enemies: ", this.ufoVelocity, "; Stars: ", this.starVelocity)
 		}
 
    },
-   createCoin: function () {
+   createStar: function () {
       // SET COORDINATES
       var x = this.game.width;
       // RANDOM NUMBER FOR HEIGHT < DEPENDS ON THE HEIGHT OF THE GROUND
       var y = this.game.rnd.integerInRange(20, this.game.world.height - 255);
       // CHECK FOR RECYCLING
-      var coin = this.coins.getFirstExists(false);
-      if (!coin) {
-         coin = new Coin(this.game, 0, 0, "coins",this.coinVelocity);
-         this.coins.add(coin);
+      var Star = this.stars.getFirstExists(false);
+      if (!Star) {
+         Star = new STAR(this.game, 0, 0, "stars",this.starVelocity);
+         this.stars.add(Star);
       }
-      // RESET THE COIN
-      coin.reset(x, y);
-      coin.revive();
-      return coin;
+      // RESET THE Star
+      Star.reset(x, y);
+      Star.revive();
+      return Star;
    },
 
-   generateCoins: function(){
-      if(!this.previousCoinType || this.previousCoinType < 3){
-         var coinType = this.game.rnd.integer() % 5;
-         switch(coinType){
+   generateStars: function(){
+      if(!this.previousStarType || this.previousStarType < 3){
+         var starType = this.game.rnd.integer() % 5;
+         switch(starType){
             case 0:
-               this.createCoin();
+               this.createStar();
                break;
             case 1:
             case 2:
-               // if the type is 1 or 2, create a single coin
-                this.createCoinGroup(this.game.rnd.integerInRange(2,3),this.game.rnd.integerInRange(2,4));
+               // if the type is 1 or 2, create a single Star
+                this.createStarGroup(this.game.rnd.integerInRange(2,3),this.game.rnd.integerInRange(2,4));
                break;
             case 3:
-               // create a small group of coins
-               this.createCoinGroup(this.game.rnd.integerInRange(2,3),2);
+               // create a small group of Stars
+               this.createStarGroup(this.game.rnd.integerInRange(2,3),2);
                break;
             case 4:
-               // create a large coin group
-               this.createCoinGroup(this.game.rnd.integerInRange(2,6),this.game.rnd.integerInRange(2,6));
+               // create a large Star group
+               this.createStarGroup(this.game.rnd.integerInRange(2,6),this.game.rnd.integerInRange(2,6));
                break;
             default:
-               // if case of error, set the previousCoinType to 0 and do nothing
-               this.previousCoinType = 0;
+               // if case of error, set the previousStarType to 0 and do nothing
+               this.previousStarType = 0;
                break;
          }
 
-         this.previousCoinType = coinType;
+         this.previousStarType = starType;
       } else {
-         if(this.previousCoinType === 4){
-            // the previous coin type was a large group, please skip
-            this.previousCoinType = 3;
+         if(this.previousStarType === 4){
+            // the previous Star type was a large group, please skip
+            this.previousStarType = 3;
          } else {
-            this.previousCoinType = 0;
+            this.previousStarType = 0;
          }
       }
    },
 
-   createCoinGroup: function(columns, rows){
-      // create 4 coins in a group
-      var coinSpawnY = this.game.rnd.integerInRange(50, this.game.world.height - this.ground.height - 240);
-      var coinRowCounter = 0;
-      var coinColumnCounter = 0;
-      var coin;
+   createStarGroup: function(columns, rows){
+      // create 4 Stars in a group
+      var StarSpawnY = this.game.rnd.integerInRange(50, this.game.world.height - this.ground.height - 240);
+      var StarRowCounter = 0;
+      var StarColumnCounter = 0;
+      var Star;
       for(var i = 0; i < columns * rows; i++){
-         coin = this.createCoin(this.spawnX, coinSpawnY, this.coinVelocity);
-         coin.x = coin.x + (coinColumnCounter * coin.width) + (coinColumnCounter * this.coinSpacingX);
-         coin.y = coinSpawnY + (coinRowCounter * coin.height) + (coinRowCounter * this.coinSpacingY);
-         coinColumnCounter++;
+         Star = this.createStar(this.spawnX, StarSpawnY, this.starVelocity);
+         Star.x = Star.x + (StarColumnCounter * Star.width) + (StarColumnCounter * this.starSpacingX);
+         Star.y = StarSpawnY + (StarRowCounter * Star.height) + (StarRowCounter * this.starSpacingY);
+         StarColumnCounter++;
          if(i+1 >= columns && (i+1) % columns === 0){
-            coinRowCounter++;
-            coinColumnCounter = 0;
+            StarRowCounter++;
+            StarColumnCounter = 0;
          }
       }
    },
@@ -235,17 +235,18 @@ SpaceChase.Game.prototype = {
 			// RANDOM NUMBER FOR HEIGHT< DEPENDS ON THE HEIGHT OF THE GROUND
 			var y = this.game.rnd.integerInRange(20, this.game.world.height - this.ground.height);
 			// CHECK FOR RECYCLING
-			var enemy = this.enemies.getFirstExists(false);
+			var ufo = this.ufos.getFirstExists(false);
 
-			if (!enemy) {
-				enemy = new UFO(this.game, 0, 0, 'ufo', this.enemyVelocity);
-				this.enemies.add(enemy);
+			if (!ufo) {
+				ufo = new UFO(this.game, 0, 0, 'ufo', this.ufoVelocity);
+				this.ufos.add(ufo);
 			}
 
 			// RESET THE ENEMIE
-			enemy.reset(x, y);
-			enemy.revive();
+			ufo.reset(x, y);
+			ufo.revive();
 		}
+		console.log("Number of ufos: ", this.ufos.children.length)
    },
 
 	createBoss: function(){
@@ -272,6 +273,7 @@ SpaceChase.Game.prototype = {
 
 			boss.reset(x,y);
 			boss.revive();
+			console.log("Number of bosses: ", this.bosses.children.length)
 	},
 
 	createMissile: function(boss){
@@ -290,7 +292,7 @@ SpaceChase.Game.prototype = {
 		this.missileSound.play('',0,true);
 		this.missileSound.volume = 0.04;
 		missile.revive();
-
+		console.log("Number of missiles: ", this.missiles.children.length)
 	},
 
    groundHit: function (player) {
@@ -312,18 +314,18 @@ SpaceChase.Game.prototype = {
       scoreboard.show(this.score);
    },
 
-   coinHit: function(player, coin){
+   starHit: function(player, Star){
       this.score++;
-      coin.kill();
-      this.coinSound.play();
+      Star.kill();
+      this.starSound.play();
 
-      var dummyCoin = new Coin(this.game,coin.x,coin.y,"coins", -400);
-      this.game.add.existing(dummyCoin);
-      dummyCoin.animations.play('spin',40,true);
+      var dummyStar = new STAR(this.game,Star.x,Star.y,"stars", -400);
+      this.game.add.existing(dummyStar);
+      dummyStar.animations.play('spin',40,true);
 
-      var scoreTween = this.game.add.tween(dummyCoin).to({x:50,y:50},300, Phaser.Easing.Linear.NONE,true);
+      var scoreTween = this.game.add.tween(dummyStar).to({x:50,y:50},300, Phaser.Easing.Linear.NONE,true);
       scoreTween.onComplete.add(function(){
-         dummyCoin.destroy();
+         dummyStar.destroy();
          this.scoreText.text = 'Score: ' + this.score;
       },this);
 
@@ -355,16 +357,16 @@ SpaceChase.Game.prototype = {
 	},
 
 	enhanceEnemies: function(){
-		this.enemyVelocity -= 50;
+		this.ufoVelocity -= 50;
 		this.bossVelocity -= 30;
 		this.missileVelocity = this.bossVelocity * 1.9;
 	},
 
-	enhanceCoins: function(){
-		this.coinVelocity -= 50;
-		// changing the speed of already existing coins
-		for(var i=0; i < this.coins.children.lenght;i++){
-			this.coins[i].body.velocity.x = this.coinVelocity;
+	enhanceStars: function(){
+		this.starVelocity -= 50;
+		// changing the speed of already existing Stars
+		for(var i=0; i < this.stars.children.lenght;i++){
+			this.stars[i].body.velocity.x = this.starVelocity;
 		}
 	},
 
@@ -378,21 +380,21 @@ SpaceChase.Game.prototype = {
 
 	stopSprites: function(){
 		// stop generating enemies
-      this.enemyTimer = Number.MAX_VALUE;
+      this.ufoTimer = Number.MAX_VALUE;
       this.bossTimer = Number.MAX_VALUE;
 		this.missileTimer = Number.MAX_VALUE;
 		// for each boss disable timer
 
-		// stop generating coins
-      this.coinTimer = Number.MAX_VALUE;
+		// stop generating Stars
+      this.starTimer = Number.MAX_VALUE;
 
 		this.ground.stopScroll();
       this.background.stopScroll();
 
 		// set velocity of existing sprites to 0
-		this.enemies.setAll('body.velocity.x',0);
+		this.ufos.setAll('body.velocity.x',0);
       this.bosses.setAll('body.velocity.x',0);
-      this.coins.setAll('body.velocity.x',0);
+      this.stars.setAll('body.velocity.x',0);
       this.missiles.setAll('body.velocity.x',0);
 	},
 
@@ -400,17 +402,17 @@ SpaceChase.Game.prototype = {
 		this.currentThreshold = 10;
 		this.score = 0;
 
-		this.previousCoinType = null;
-		this.coinSpawnX = null;
-		this.coinSpacingX = 10;
-		this.coinSpacingY = 10;
-		this.coinVelocity = -400;
+		this.previousStarType = null;
+		this.starSpawnX = null;
+		this.starSpacingX = 10;
+		this.starSpacingY = 10;
+		this.starVelocity = -400;
 
-		this.coinRate = 2000; // appear every second
-		this.coinTimer = 0; // check every game loop if the coin was created
+		this.starRate = 2000; // appear every second
+		this.starTimer = 0; // check every game loop if the Star was created
 
-		this.enemyRate = 900;
-		this.enemyTimer = 0;
+		this.ufoRate = 900;
+		this.ufoTimer = 0;
 
 		this.bossRate = 3000;
 		this.bossTimer = 0;
@@ -421,19 +423,17 @@ SpaceChase.Game.prototype = {
 		this.backgroundScrollSpeed = -400;
 		this.groundScrollSpeed = -100;
 
-		this.enemyVelocity = -400;
+		this.ufoVelocity = -400;
 		this.bossVelocity = -275;
 		this.missileVelocity = this.bossVelocity * 3;
 
 	},
 
    shutdown: function() {
-      this.coins.destroy();
-      this.enemies.destroy();
+      this.stars.destroy();
+      this.ufos.destroy();
 		this.bosses.destroy();
 		this.missiles.destroy();
-
-		this.resetInitialParams();
    }
 
 }

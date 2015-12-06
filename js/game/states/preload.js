@@ -16,7 +16,7 @@ SpaceChase.Preload.prototype = {
       this.load.image('background', 'assets/images/space.png');
 
 		// Loading spritesheets --> (key, location, frame width, frame height, number of frames)
-      this.load.spritesheet('coins', 'assets/images/stars.png', 65.14, 78, 7);
+      this.load.spritesheet('stars', 'assets/images/stars.png', 65.14, 78, 7);
       this.load.spritesheet('player', 'assets/images/spaceship.png', 64, 29, 4);
       this.load.spritesheet('ufo', 'assets/images/ufo.png', 40, 30, 6);
 		this.load.spritesheet('boss','assets/images/boss.png', 40, 30, 6);
@@ -27,7 +27,7 @@ SpaceChase.Preload.prototype = {
 		// Loading audio files --> (key, loacation)
       this.load.audio('gameMusic','assets/audio/theme.wav');
       this.load.audio('rocket', 'assets/audio/launch.wav');
-      this.load.audio('coin','assets/audio/star.wav');
+      this.load.audio('star','assets/audio/star.wav');
       this.load.audio('death', 'assets/audio/explosion.wav');
 		this.load.audio('missile','assets/audio/flap.wav');
 
