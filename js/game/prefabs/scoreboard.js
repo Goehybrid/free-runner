@@ -22,7 +22,7 @@ Scoreboard.prototype.show = function(score){
    // setting the new high score
    var isNewHighScore = false;
    var highscore = localStorage.getItem('highscore');
-   if(!highscore || highscore < score){
+   if((!highscore || highscore < score) && score !== 0){
       isNewHighScore = true;
       highscore = score;
       localStorage.setItem('highscore',highscore);
@@ -52,8 +52,11 @@ Scoreboard.prototype.show = function(score){
       newHighScoreText.tint = 0x43bef7;
       newHighScoreText.x = gameOverText.x + gameOverText.textWidth + 40;
       newHighScoreText.angle = 45;
+		newHighScoreText.anchor.setTo(0.5);
 		//add tween here
       this.add(newHighScoreText);
+
+		this.game.add.tween(newHighScoreText.scale).to({x: 0.7, y: 0.7}, 400, Phaser.Easing.Linear.NONE, true, 0, Infinity, true);
    }
 
    this.game.add.tween(this).to({y:0}, 1000, Phaser.Easing.Bounce.Out, true);

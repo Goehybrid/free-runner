@@ -2,8 +2,6 @@
 // * play sound when threshold increases
 // * refactoring
 // * increase enemies and coins rate
-// * prevent boss from spawning missiles when close to player
-// * boss and missile inherit from enemy
 
 SpaceChase.Game = function () {
    this.playerMinAngle = -23;
@@ -34,7 +32,7 @@ SpaceChase.Game.prototype = {
 
       // PHYSICS SETUP
       this.game.physics.startSystem(Phaser.Physics.ARCADE);
-      this.game.physics.arcade.gravity.y = 700;
+      this.game.physics.arcade.gravity.y = 500;
 
       // GROUND PHYSICS
       this.game.physics.arcade.enableBody(this.ground);
@@ -63,7 +61,9 @@ SpaceChase.Game.prototype = {
 
       // SOUNDS
       this.rocketSound = this.game.add.audio('rocket');
-		this.rocketSound.volume = 1.5;
+
+
+		this.missileSound = this.game.add.audio('missile');
 
       this.coinSound = this.game.add.audio('coin');
 
@@ -89,6 +89,7 @@ SpaceChase.Game.prototype = {
          this.player.body.velocity.y -= 25;
          if(!this.rocketSound.isPlaying){
             this.rocketSound.play('',0,true);
+				this.rocketSound.volume = 1.4;
          }
       } else {
          this.rocketSound.stop();
@@ -180,11 +181,11 @@ SpaceChase.Game.prototype = {
             case 1:
             case 2:
                // if the type is 1 or 2, create a single coin
-                this.createCoinGroup(this.game.rnd.integerInRange(1,3),this.game.rnd.integerInRange(2,4));
+                this.createCoinGroup(this.game.rnd.integerInRange(2,3),this.game.rnd.integerInRange(2,4));
                break;
             case 3:
                // create a small group of coins
-               this.createCoinGroup(this.game.rnd.integerInRange(1,2),2);
+               this.createCoinGroup(this.game.rnd.integerInRange(2,3),2);
                break;
             case 4:
                // create a large coin group
@@ -237,7 +238,7 @@ SpaceChase.Game.prototype = {
 			var enemy = this.enemies.getFirstExists(false);
 
 			if (!enemy) {
-				enemy = new Enemy(this.game, 0, 0, 'ufo', this.enemyVelocity);
+				enemy = new UFO(this.game, 0, 0, 'ufo', this.enemyVelocity);
 				this.enemies.add(enemy);
 			}
 
@@ -251,18 +252,19 @@ SpaceChase.Game.prototype = {
 			var self = this;
 
 			var x = this.game.width;
-			var y = this.game.rnd.integerInRange(20, this.game.world.height - this.ground.height);
+		   var y = this.player.body.y;
+			//var y = this.game.rnd.integerInRange(20, this.game.world.height - this.ground.height);
 			var boss = this.bosses.getFirstExists(false);
 
 			// the following code can be refactored
 			if(!boss){
-				boss = new Boss(this.game,0,0,'boss', this.bossVelocity);
+				boss = new BOSS(this.game,0,0,'boss', this.bossVelocity);
 				boss.missileTimer = this.missileTimer;
 				this.bosses.add(boss);
 			}
 
 			boss.update = function(){
-				if(boss.missileTimer < self.game.time.now && self.missileTimer !== Number.MAX_VALUE){
+				if(boss.missileTimer < self.game.time.now && self.missileTimer !== Number.MAX_VALUE && (boss.body.x - self.player.body.x) > 200){
 					self.createMissile(boss);
 					boss.missileTimer = self.game.time.now + self.missileRate;
 				}
@@ -280,11 +282,13 @@ SpaceChase.Game.prototype = {
 		var missile = this.missiles.getFirstExists(false);
 
 		if(!missile){
-			missile = new Missile(this.game,0,0,'missile',this.missileVelocity);
+			missile = new MISSILE(this.game,0,0,'missile',this.missileVelocity);
 			this.missiles.add(missile);
 		}
 
 		missile.reset(x,y);
+		this.missileSound.play('',0,true);
+		this.missileSound.volume = 0.04;
 		missile.revive();
 
 	},
@@ -313,7 +317,7 @@ SpaceChase.Game.prototype = {
       coin.kill();
       this.coinSound.play();
 
-      var dummyCoin = new Coin(this.game,coin.x,coin.y, -400);
+      var dummyCoin = new Coin(this.game,coin.x,coin.y,"coins", -400);
       this.game.add.existing(dummyCoin);
       dummyCoin.animations.play('spin',40,true);
 

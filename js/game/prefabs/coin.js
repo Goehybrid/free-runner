@@ -1,11 +1,9 @@
-var Coin = function(game, x, y, key, velocity,frame){
+var Coin = function(game, x, y, key, velocity){
     // game - reference to the game
     // x,y - coordinates
     // the key name of the object
-    // frame specification
 
-    key="coins";
-    Phaser.Sprite.call(this, game, x, y, key, frame);
+    Phaser.Sprite.call(this, game, x, y, key);
     
     this.scale.setTo(0.3);
     this.anchor.setTo(0.5);
