@@ -1,11 +1,11 @@
 // This state loads all the game assets
 
-// Creating the boot state
+// Creating the preload state
 SpaceChase.Preload = function () {
    this.ready = false;
 };
 
-// Extending the prototype for the boot state
+// Extending the prototype for the preload state
 SpaceChase.Preload.prototype = {
 
 	// Loading all the assets that we will need in the game
@@ -35,7 +35,7 @@ SpaceChase.Preload.prototype = {
       this.load.bitmapFont('minecraftia', 'assets/fonts/minecraftia/minecraftia.png', 'assets/fonts/minecraftia/minecraftia.xml');
 
       // Specifying the callback that will be triggered when
-		// the asset loading was completed --> (function to fire, context)
+		// the asset loading was completed --> (method to fire, context)
       this.load.onLoadComplete.add(this.onLoadComplete, this);
    },
 
