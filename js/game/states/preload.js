@@ -22,14 +22,13 @@ SpaceChase.Preload.prototype = {
 		this.load.spritesheet('boss','assets/images/boss.png', 40, 30, 6);
 		this.load.spritesheet('missile','assets/images/missile.png',361, 217, 4);
       this.load.spritesheet('explosion','assets/images/explode.png',26,26,6);
-      this.load.spritesheet('exhaust','assets/images/flame.png',200,33,6);
 
 		// Loading audio files --> (key, loacation)
-      this.load.audio('gameMusic','assets/audio/theme.wav');
-      this.load.audio('rocket', 'assets/audio/launch.wav');
-      this.load.audio('star','assets/audio/star.wav');
-      this.load.audio('death', 'assets/audio/explosion.wav');
-		this.load.audio('missile','assets/audio/flap.wav');
+      this.load.audio('gameMusic',['assets/audio/theme.ogg', 'assets/audio/theme.mp3']);
+      this.load.audio('rocket',['assets/audio/launch.ogg', 'assets/audio/launch.mp3']);
+      this.load.audio('star', ['assets/audio/star.ogg', 'assets/audio/star.mp3']);
+      this.load.audio('death', ['assets/audio/explosion.ogg', 'assets/audio/explosion.mp3']);
+		this.load.audio('missile', ['assets/audio/flap.ogg', 'assets/audio/flap.mp3']);
 
 		// Loading third-party font --> (key, asset, XML mapping)
       this.load.bitmapFont('minecraftia', 'assets/fonts/minecraftia/minecraftia.png', 'assets/fonts/minecraftia/minecraftia.xml');
@@ -59,7 +58,7 @@ SpaceChase.Preload.prototype = {
 	// This method is executed 60 times per second
    update: function () {
 		// Checking if all the assests were loaded successfully
-      if (this.ready === true) {
+      if (this.cache.isSoundDecoded("gameMusic") && this.ready === true) {
 			// Launching the "MainMenu" state --> (key)
          this.state.start('MainMenu');
       }

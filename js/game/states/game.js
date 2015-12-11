@@ -121,6 +121,9 @@ SpaceChase.Game.prototype = {
 				// Decrease player's angle by 0.5 every tick
             this.player.angle -= 0.5;
          }
+			if(this.player.angle > 0){
+				this.player.angle = 0;
+			}
       } else if (this.player.body.velocity.y >= 0 && !this.game.input.activePointer.isDown) {
 			// Otherwise, increase player's angle by 0.5 every tick
          if (this.player.angle < this.playerMaxAngle) {
