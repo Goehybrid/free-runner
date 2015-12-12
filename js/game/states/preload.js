@@ -1,5 +1,3 @@
-// This state loads all the game assets
-
 // Creating the preload state
 SpaceChase.Preload = function () {
    this.ready = false;
@@ -51,7 +49,7 @@ SpaceChase.Preload.prototype = {
       this.loadingText.x = this.game.width / 2;
       this.loadingText.y = this.game.height / 2 + this.logo.height / 2;
 
-		// adding animation to the loading text --> (object).to(properties, duration,ease,autostart,delay,repeat,yoyo)
+		// adding animation to the loading text --> (object).to(properties, duration,ease,autostart,delay,repeat,yoyo effect)
 		this.game.add.tween(this.loadingText).to({x: this.loadingText.x-200}, 500, Phaser.Easing.Linear.NONE, true, 0, Infinity, true);
    },
 

@@ -1,10 +1,3 @@
-// to-do:
-// * play sound when threshold increases
-// * refactoring
-// * increase enemies and Stars rate
-
-//This state is responsible for the main game logic
-
 // Creating a game state
 SpaceChase.Game = function () {
 	// Specifying the maximum angle the player sprite turn up/down to
@@ -90,7 +83,7 @@ SpaceChase.Game.prototype = {
 		// Adding a music for the main game theme --> (key)
       this.gameMusic = this.game.add.audio('gameMusic');
 		// PLaying the main theme music right away --> (marker, starting point,volume loop)
-      this.gameMusic.play('',0,0.09,true);
+      this.gameMusic.play('', 0, 0.09, true);
       // Setting the stars' default spawing point
       this.starSpawnX = this.game.width + 64;
    },
@@ -104,16 +97,16 @@ SpaceChase.Game.prototype = {
          this.player.body.velocity.y -= 25;
 			// The engine sound is not playing
          if(!this.rocketSound.isPlaying){
-				// Play the rocket's engine sound --> (marker,starting point, loop)
-            this.rocketSound.play('',0,1.4,true);
+				// Play the rocket's engine sound --> (marker, starting point, loop)
+            this.rocketSound.play('', 0, 1.4, true);
          }
       } else {
 			// Otherwise, stop the engine sound
-			// P.S. The player will go lower with a help of built-in gravity system
+			// P.S. The player will go down with a help of built-in gravity system
          this.rocketSound.stop();
       }
 
-      // Watching the main player's vertical velocity
+      // Watching the user's input
 		// If player's vertical velocity is less that 0 and the user in holding the mouse button
       if (this.player.body.velocity.y < 0 || this.game.input.activePointer.isDown) {
 			// If player's angle is greater that the pre-set minimal angle
@@ -124,6 +117,7 @@ SpaceChase.Game.prototype = {
 			if(this.player.angle > 0){
 				this.player.angle = 0;
 			}
+
       } else if (this.player.body.velocity.y >= 0 && !this.game.input.activePointer.isDown) {
 			// Otherwise, increase player's angle by 0.5 every tick
          if (this.player.angle < this.playerMaxAngle) {

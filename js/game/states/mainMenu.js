@@ -1,5 +1,3 @@
-// This state shows the main manu
-
 // Creating the MainMenu state
 SpaceChase.MainMenu = function () {};
 
@@ -35,12 +33,12 @@ SpaceChase.MainMenu.prototype = {
 		// Setting the anchor of the game logo to be in the center of the image
 		this.splash.anchor.setTo(0.5);
 
-		// adding the prompting to the game --> (x-coord,y-coord,key,text value, font size)
+		// adding the prompting to the game --> (x-coord, y-coord, key, text value, font size)
 		this.startText = this.game.add.bitmapText(0, 0, 'minecraftia', 'Tap to start', 32);
 		this.startText.x = this.game.width / 2 - this.startText.textWidth / 2;
 		this.startText.y = this.game.height / 2 + this.splash.height / 2;
 
-		// Reset the high score value (if exists) --> (key, value)
+		// Reset the high score value --> (key, value)
 		localStorage.setItem('highscore', 0);
 	},
 

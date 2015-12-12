@@ -1,5 +1,3 @@
-// This state sets up global configurations for the game
-
 // Setting up the global game class that holds the game
 var SpaceChase = function () {};
 // Creating the boot state
