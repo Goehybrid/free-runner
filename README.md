@@ -9,7 +9,7 @@ The game is built on the following technologies:
 
 Check out the game [here]
 
-
+![alt tag](https://raw.github.com/Goehybrid/free-runner/master/assets/images/game.png)
 
 
 [here]: <http://goehybrid.github.io/free-runner/>
