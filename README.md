@@ -1,2 +1,2 @@
-# free-runner
-# This is my INF senior project
+# Space Chase
+#### An infinite runner game that I have created for my INF Senior Project class
